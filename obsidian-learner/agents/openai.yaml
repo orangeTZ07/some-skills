@@ -1,0 +1,4 @@
+interface:
+  display_name: "Obsidian Learner"
+  short_description: "Turn conversations into Obsidian notes and Canvas links"
+  default_prompt: "Use $obsidian-learner to turn this conversation into an Obsidian note and update my Canvas if appropriate."
