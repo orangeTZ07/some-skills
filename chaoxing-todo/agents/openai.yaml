@@ -1,0 +1,4 @@
+interface:
+  display_name: "LMS Todo Finder"
+  short_description: "Find course todos with privacy-safe output."
+  default_prompt: "Find unfinished assignments, tasks, and chapter task points in my learning platform."
