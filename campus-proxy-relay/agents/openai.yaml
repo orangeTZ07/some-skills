@@ -1,0 +1,4 @@
+interface:
+  display_name: "Campus Proxy Relay"
+  short_description: "Diagnose campus proxy failures and relays."
+  default_prompt: "Diagnose a campus or restricted-network proxy failure, decide whether a relay is needed, and build a reversible test and deployment plan."

@@ -1,23 +1,24 @@
 ---
 name: obsidian-learner
-description: Turn an AI conversation, troubleshooting session, learning thread, or terminal/code investigation into an Obsidian-ready Markdown note and optional Canvas graph update. Use when the user explicitly asks to save, summarize, archive, distill, or "沉淀" current context into an Obsidian vault; when creating notes with frontmatter, tags, glossary terms, [待验证] markers, or .canvas links; or when maintaining an Obsidian knowledge base from chat history.
+description: Turn an AI conversation, troubleshooting session, learning thread, or terminal/code investigation into an Obsidian-ready Markdown note plus a Canvas graph update by default. Use when the user explicitly asks to save, summarize, archive, distill, or "沉淀" current context into an Obsidian vault; when creating notes with frontmatter, tags, glossary terms, [待验证] markers, or .canvas links; or when maintaining an Obsidian knowledge base from chat history.
 ---
 
 # Obsidian Learner
 
 ## Overview
 
-Convert the current working context into a durable Obsidian knowledge artifact: one Markdown note, optional glossary updates, and optional Canvas links to related notes. Prefer explicit user intent over automatic triggering; do not silently write into a vault.
+Convert the current working context into a durable Obsidian knowledge artifact: one Markdown note, glossary updates when useful, and a Canvas node/link update by default. Prefer explicit user intent over automatic triggering; do not silently write into a vault.
 
 ## Workflow
 
 1. Confirm the target vault only if it is ambiguous. Read `~/.config/obsidian-learner/config.json` when present; otherwise ask for a vault path and optionally create the config.
 2. Load or initialize style preferences from `<vault>/.obsidian-learner/style_profile.json`. If missing, ask a short questionnaire before writing the first note.
 3. Synthesize the note from the current conversation, terminal outputs, and relevant local files the user referenced. Do not invent facts to fill gaps.
-4. Write a Markdown note with frontmatter, a stable structure, tags, and `[待验证]` markers for uncertain details.
-5. Update `<vault>/.obsidian-learner/glossary.json` only for useful terms introduced by the new note.
-6. Optionally update an Obsidian `.canvas` file by linking the new note to existing notes with overlapping tags or title keywords.
-7. Report the created paths, new glossary terms, Canvas links, and verification items.
+4. Choose the destination folder conservatively. Use the user's requested folder when given; otherwise use `Notes/` or a clearly matching top-level topic folder. Do not place notes into semantically reserved folders such as `src/`, `ctf/`, `machine_learning/`, project source trees, or imported vault subtrees unless the user explicitly asks for that location.
+5. Write a Markdown note with frontmatter, a stable structure, tags, and `[待验证]` markers for uncertain details.
+6. Update `<vault>/.obsidian-learner/glossary.json` only for useful terms introduced by the new note.
+7. Update an Obsidian `.canvas` file by linking the new note to existing notes with overlapping tags or title keywords, unless the user explicitly says not to maintain Canvas or the vault has no appropriate Canvas target and creating one would be inappropriate.
+8. Report the created paths, new glossary terms, Canvas links, and verification items.
 
 ## Configuration
 
@@ -114,6 +115,7 @@ Rules:
 - Keep failed attempts if they explain the final solution.
 - Prefer concise, reusable knowledge over transcript-style summaries.
 - Use the user's configured heading, callout, and code block preferences.
+- Keep destination folders meaningful: troubleshooting and operations notes belong in general knowledge/topic folders such as `Notes/`, `network/`, `linux/`, or another explicit user-selected folder, not in directories whose local convention indicates source-code study, CTF notes, ML notes, or imported sub-vault content.
 
 ## Glossary
 
@@ -132,7 +134,9 @@ Add terms only when they help future reading: command flags, acronyms, tool name
 
 ## Canvas Update
 
-When the user asks for a Canvas graph or config says to maintain one:
+Default behavior: maintain a Canvas graph for each new knowledge note unless the user explicitly declines Canvas. Use a user-specified Canvas when provided; otherwise prefer an existing top-level knowledge Canvas such as `Knowledge.canvas`, and create `Knowledge.canvas` when no suitable Canvas exists.
+
+When updating a Canvas:
 
 - Use Obsidian Canvas JSON with `nodes` and `edges`.
 - Add the new note as a `file` node.

@@ -1,6 +1,6 @@
 ---
 name: model-delegation
-description: Orchestrates sub-agent delegation by model tier: GPT-5.5 for exploration, hard reasoning, and final review; GPT-5.4-class models for implementation and work summaries. Use when the user explicitly asks to distribute work to subagents, use multiple model tiers, assign GPT-5.5/GPT-5.4 roles, or run an explore-implement-review workflow.
+description: "Orchestrates sub-agent delegation by model tier: GPT-5.5 for exploration, hard reasoning, and final review; GPT-5.4-class models for implementation and work summaries. Use when the user explicitly asks to distribute work to subagents, use multiple model tiers, assign GPT-5.5/GPT-5.4 roles, run an explore-implement-review workflow, or has set a standing preference to use multi-agent workflows proactively."
 ---
 
 # Model Delegation
@@ -15,9 +15,22 @@ Default model roles:
 - `gpt-5.4`: bounded implementation, test fixes, mechanical refactors, and worker summaries.
 - `gpt-5.3-codex` or `gpt-5.4-mini`: narrow coding or search tasks only when speed/cost matters more than depth.
 
+## Delegation Bias
+
+Be proactive once delegation is authorized. If the user has explicitly asked for subagents, delegation, parallel agents, this model-tier workflow, or a standing preference to use multi-agent workflows, treat that as authorization for the current task and closely related follow-up work in the same session.
+
+Prefer delegating when at least one of these is true:
+
+- Exploration and implementation can proceed independently.
+- The task touches multiple files, interaction paths, or regression risks.
+- A reviewer can check a concrete diff while the main agent prepares verification.
+- A worker can make a bounded patch with a clear write scope while the main agent handles a different critical-path step.
+
+For small tasks, use a lean shape: one explorer or one worker, plus local integration. Do not add agents just to create ceremony.
+
 ## Gate
 
-Only spawn subagents when the user explicitly requests subagents, delegation, parallel agents, or this model-tier workflow. Depth, complexity, or a request to "think hard" is not enough by itself.
+Spawn subagents only when delegation has been authorized by the user, either in the current request or through an explicit standing preference. Depth, complexity, or a request to "think hard" is not enough by itself.
 
 Before spawning:
 
@@ -59,6 +72,7 @@ Use gpt-5.5. Review the integrated diff and worker summaries. Prioritize bugs, r
 ## Guardrails
 
 - Do not hand off the next blocking step if the main agent can do it immediately.
+- After authorization, actively look for useful sidecar tasks instead of defaulting to solo execution.
 - Do not wait for subagents unless their result is needed for the next critical-path action.
 - Do not let two workers edit the same file unless the write scopes are explicitly non-overlapping and easy to merge.
 - Prefer one explorer plus one worker over many agents when the task is small.
